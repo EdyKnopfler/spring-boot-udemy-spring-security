@@ -59,7 +59,6 @@ public class SegurancaConfig {
 			.headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
 			.csrf(csrf -> 
 				csrf.ignoringRequestMatchers(matchers))
-			.formLogin(Customizer.withDefaults())
 			.httpBasic(Customizer.withDefaults())
 			.build();
 	}
