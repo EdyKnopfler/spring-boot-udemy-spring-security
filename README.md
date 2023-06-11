@@ -15,6 +15,8 @@ O console do H2 é protegido e o acesso é dado somente aos usuários de perfil 
 esta regra pode ser relaxada temporariamente mudando o código em `SegurancaConfig.java`, bastando mudar o _antMatcher_ do array de admins para
 o array de permitidos.
 
+A opção pelo H2 como database foi feita para simplificação; outros servidores de bancos de dados não apresentarão esse tipo de questão.
+
 ## Endpoints
 
 * `GET /` (home): conteúdo aberto
