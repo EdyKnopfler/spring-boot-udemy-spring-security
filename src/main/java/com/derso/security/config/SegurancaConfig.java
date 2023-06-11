@@ -53,7 +53,7 @@ public class SegurancaConfig {
 	// Segundo as docs, o SecurityFilterChain se integra na cadeia de filtros de servlets
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		AntPathRequestMatcher[] matchers = Arrays.asList(
+		AntPathRequestMatcher[] adminMatchers = Arrays.asList(
 			antMatcher("/usuarios/**"),
 			antMatcher("/h2-console/**")
 		).toArray(AntPathRequestMatcher[]::new);
@@ -61,8 +61,8 @@ public class SegurancaConfig {
 		return http
 			.authorizeHttpRequests(
 				autorizacao -> autorizacao
-					.requestMatchers("/").permitAll()  // Permite a home
-					.requestMatchers(matchers).hasAnyRole("ADMIN")  // Verifica o perfil de admin nestes
+					.requestMatchers("/", "/usuarios/autenticar").permitAll()  // Permite a home
+					.requestMatchers(adminMatchers).hasAnyRole("ADMIN")  // Verifica o perfil de admin nestes
 					.anyRequest().authenticated()  // Bloqueia o resto
 			)
 			
@@ -85,7 +85,7 @@ public class SegurancaConfig {
 			// via cURL de jeito nenhum :P
 			.headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
 			.csrf(csrf -> 
-				csrf.ignoringRequestMatchers(matchers))
+				csrf.ignoringRequestMatchers(adminMatchers))
 			.httpBasic(Customizer.withDefaults())
 			.formLogin(Customizer.withDefaults())
 			

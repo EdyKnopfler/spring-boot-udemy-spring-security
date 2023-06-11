@@ -9,6 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.derso.security.autenticacao.JwtService;
+import com.derso.security.autenticacao.SenhaInvalidaException;
+
 /*
  * Injetada automaticamente no Spring Boot :)
  */
@@ -25,10 +28,29 @@ public class UsuarioServiceImpl
 	@Autowired
 	private UsuarioRepository repositorio;
 	
+	@Autowired
+	private JwtService jwtService;
+	
 	public void salvar(Usuario usuario) {
 		String senhaPelada = usuario.getSenha();
 		usuario.setSenha(encoder.encode(senhaPelada));
 		repositorio.save(usuario);
+	}
+	
+	public String autenticar(Usuario usuario) 
+			throws UsernameNotFoundException, SenhaInvalidaException {
+		
+		// Os padrões do Spring Security são automáticos; aqui é tudo no 
+		// "manuático"
+		UserDetails userDetails = loadUserByUsername(usuario.getLogin());
+		String senhaDigitada = usuario.getSenha();
+		String criptografada = userDetails.getPassword().replace("{bcrypt}", "");
+		
+		if (encoder.matches(senhaDigitada, criptografada)) {
+			return jwtService.gerarToken(usuario);
+		}
+		
+		throw new SenhaInvalidaException();
 	}
 			
 	@Override
