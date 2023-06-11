@@ -1,14 +1,9 @@
 package com.derso.security.config;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -24,13 +19,19 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * Para não se perder no meio de tanta mudança, bora ler as docs!
  * https://docs.spring.io/spring-security/reference/current/index.html
  * 
+ * Com JDBC: fornecemos o UserDetailsManager
+ * https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/jdbc.html
+ * 
+ * Encontrei um jeito de preencher o cara antigo (AuthenticationManagerBuilder)!
+ * https://www.baeldung.com/spring-security-authentication-provider
+ * O artigo usa para configurar de forma totalmente customizada um provedor externo.
+ * 
+ * Com o serviço customizado (ver UsuarioServiceImpl.java) nada disso é necessário, pois sendo um @Service
+ * ele entra automaticamente na injeção de dependências.
  */
 
 @Configuration
 public class SegurancaConfig {
-	
-	@Autowired
-	private DataSource dataSource;
 	
 	// ESTE é o cara que configura o HttpSecurity agora :)
 	// Segundo as docs, o SecurityFilterChain se integra na cadeia de filtros de servlets
@@ -55,16 +56,4 @@ public class SegurancaConfig {
 			.build();
 	}
 	
-	@Bean
-	public UserDetailsService usuariosComBcrypt() {
-		/*
-		 *  Seguindo exemplo em:
-		 *  https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/jdbc.html
-		 *  
-		 *  Necessário antes acessar o database e executar os scripts de criação das tabelas.
-		 *  Criação dos usuários realizada na primeira execução (ver link da doc)
-		 */
-		return new JdbcUserDetailsManager(dataSource);
-	}
-
 }
