@@ -4,12 +4,18 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import com.derso.security.autenticacao.JwtAuthFilter;
+import com.derso.security.autenticacao.JwtService;
+import com.derso.security.usuarios.UsuarioServiceImpl;
 
 /*
  * CONFIGURAÇÕES DO SPRING SECURITY
@@ -37,6 +43,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SegurancaConfig {
 	
+	@Autowired
+	private UsuarioServiceImpl usuarioService;
+	
+	@Autowired
+	private JwtService jwtService;
+	
 	// ESTE é o cara que configura o HttpSecurity agora :)
 	// Segundo as docs, o SecurityFilterChain se integra na cadeia de filtros de servlets
 	@Bean
@@ -51,8 +63,23 @@ public class SegurancaConfig {
 				autorizacao -> autorizacao
 					.requestMatchers("/").permitAll()  // Permite a home
 					.requestMatchers(matchers).hasAnyRole("ADMIN")  // Verifica o perfil de admin nestes
-					.anyRequest().authenticated()  // Bloqueia o resto 
+					.anyRequest().authenticated()  // Bloqueia o resto
 			)
+			
+			// Nosso filtro customizado (validação de JWT)
+			// Executa antes do filtro padrão do Spring indicado
+			.addFilterBefore(
+					new JwtAuthFilter(jwtService, usuarioService),
+					UsernamePasswordAuthenticationFilter.class)
+			
+			// Em uma API REST real desativaríamos as sessões
+			// Aqui, para estudo, estou habilitando navegação no browser com form de login
+			// (conveniência para acessar o console do H2)
+			/*
+			.sessionManagement((session) -> session
+	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			*/
+			
 			// O console do H2 requer habilitar os iframes e ignorar CSRF
 			// PQP: estava esquecendo de desabilitar CSRF nos endpoints REST e não funcionava
 			// via cURL de jeito nenhum :P
@@ -61,6 +88,8 @@ public class SegurancaConfig {
 				csrf.ignoringRequestMatchers(matchers))
 			.httpBasic(Customizer.withDefaults())
 			.formLogin(Customizer.withDefaults())
+			
+			// That's all, folks!
 			.build();
 	}
 	
