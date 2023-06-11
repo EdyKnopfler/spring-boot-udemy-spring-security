@@ -24,7 +24,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private JwtService jwtService;
 	private UsuarioServiceImpl usuarioService;
 	
-	// Usada na configuração do Spring Boot
+	// Usada na configuração do Spring Boot (ver SegurancaConfig.java)
 	public JwtAuthFilter(JwtService jwtService, UsuarioServiceImpl usuarioService) {
 		this.jwtService = jwtService;
 		this.usuarioService = usuarioService;
