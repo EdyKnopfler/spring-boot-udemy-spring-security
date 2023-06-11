@@ -21,7 +21,7 @@
 		<dependency>
 			<!-- 
 				Estou segurado!
-				https://www.youtube.com/watch?v=8VXYxRBd90c
+			https://www.youtube.com/watch?v=8VXYxRBd90c
 			-->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -33,23 +33,30 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<!-- Driver JDBC -->
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<!-- Spring Data -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<!-- Bean Validation no Spring Boot -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<!-- JSON Web Token (JWT) -->
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
 		</dependency>
 
 		<dependency>
