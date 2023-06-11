@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /*
  * CONFIGURAÇÕES DO SPRING SECURITY
@@ -36,8 +37,16 @@ public class SegurancaConfig {
 			.authorizeHttpRequests(
 				autorizacao -> autorizacao
 					.requestMatchers("/").permitAll()  // Permite a home
-					.anyRequest().authenticated()      // Bloqueia o resto
+					.requestMatchers(
+							AntPathRequestMatcher.antMatcher("/h2-console/**"))
+						.hasAnyRole("ADMIN")
+					.anyRequest().authenticated()      // Bloqueia o resto 
 			)
+			// O console do H2 requer habilitar os iframes e ignorar CSRF
+			.headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
+			.csrf(csrf -> 
+				csrf.ignoringRequestMatchers(
+						AntPathRequestMatcher.antMatcher("/h2-console/**")))
 			.formLogin(Customizer.withDefaults())
 			.build();
 	}
