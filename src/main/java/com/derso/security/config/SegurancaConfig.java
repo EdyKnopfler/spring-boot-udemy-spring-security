@@ -53,15 +53,22 @@ public class SegurancaConfig {
 	// Segundo as docs, o SecurityFilterChain se integra na cadeia de filtros de servlets
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		
 		AntPathRequestMatcher[] adminMatchers = Arrays.asList(
 			antMatcher("/usuarios/**"),
 			antMatcher("/h2-console/**")
 		).toArray(AntPathRequestMatcher[]::new);
+		
+		AntPathRequestMatcher[] permitidosMatchers = Arrays.asList(
+			antMatcher("/"),
+			antMatcher("/usuarios/autenticar")
+		).toArray(AntPathRequestMatcher[]::new);
+		
 		// Fluent interfaces são a pior merda já inventada #ChangeMyMind
 		return http
 			.authorizeHttpRequests(
 				autorizacao -> autorizacao
-					.requestMatchers("/", "/usuarios/autenticar").permitAll()  // Permite a home
+					.requestMatchers(permitidosMatchers).permitAll()  // Permite a home
 					.requestMatchers(adminMatchers).hasAnyRole("ADMIN")  // Verifica o perfil de admin nestes
 					.anyRequest().authenticated()  // Bloqueia o resto
 			)
