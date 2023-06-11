@@ -55,7 +55,14 @@
 		<dependency>
 			<!-- JSON Web Token (JWT) -->
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		
+		<dependency>
+			<!-- JSON Web Token (JWT): parte II -->
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-gson</artifactId>
 			<version>0.11.5</version>
 		</dependency>
 
