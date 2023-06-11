@@ -42,7 +42,6 @@ public class SegurancaConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		AntPathRequestMatcher[] matchers = Arrays.asList(
-			antMatcher("/usuarios"),
 			antMatcher("/usuarios/**"),
 			antMatcher("/h2-console/**")
 		).toArray(AntPathRequestMatcher[]::new);
@@ -55,6 +54,8 @@ public class SegurancaConfig {
 					.anyRequest().authenticated()  // Bloqueia o resto 
 			)
 			// O console do H2 requer habilitar os iframes e ignorar CSRF
+			// PQP: estava esquecendo de desabilitar CSRF nos endpoints REST e não funcionava
+			// via cURL de jeito nenhum :P
 			.headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
 			.csrf(csrf -> 
 				csrf.ignoringRequestMatchers(matchers))
