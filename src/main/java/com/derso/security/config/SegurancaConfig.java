@@ -1,5 +1,9 @@
 package com.derso.security.config;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -37,23 +41,25 @@ public class SegurancaConfig {
 	// Segundo as docs, o SecurityFilterChain se integra na cadeia de filtros de servlets
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		AntPathRequestMatcher[] matchers = Arrays.asList(
+			antMatcher("/usuarios"),
+			antMatcher("/usuarios/**"),
+			antMatcher("/h2-console/**")
+		).toArray(AntPathRequestMatcher[]::new);
 		// Fluent interfaces são a pior merda já inventada #ChangeMyMind
 		return http
 			.authorizeHttpRequests(
 				autorizacao -> autorizacao
 					.requestMatchers("/").permitAll()  // Permite a home
-					.requestMatchers(
-						AntPathRequestMatcher.antMatcher("/h2-console/**"),
-						AntPathRequestMatcher.antMatcher("/usuarios/**")
-					).hasAnyRole("ADMIN")
-					.anyRequest().authenticated()      // Bloqueia o resto 
+					.requestMatchers(matchers).hasAnyRole("ADMIN")  // Verifica o perfil de admin nestes
+					.anyRequest().authenticated()  // Bloqueia o resto 
 			)
 			// O console do H2 requer habilitar os iframes e ignorar CSRF
 			.headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
 			.csrf(csrf -> 
-				csrf.ignoringRequestMatchers(
-						AntPathRequestMatcher.antMatcher("/h2-console/**")))
+				csrf.ignoringRequestMatchers(matchers))
 			.formLogin(Customizer.withDefaults())
+			.httpBasic(Customizer.withDefaults())
 			.build();
 	}
 	
