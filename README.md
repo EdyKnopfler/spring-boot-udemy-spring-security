@@ -24,7 +24,7 @@ A opção pelo H2 como database foi feita para simplificação; outros servidore
 * `GET /confidencial`: aceita acesso somente logado
   *  Via sessão (use o form de login)
   *  Cabeçalho [HTTP Basic](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Authentication): `Authorization: Basic ...`
-  *  Cabeçalho JWT: `Authorization: Bearer...`
+  *  Cabeçalho JWT: `Authorization: Bearer <token>`
 * `POST /usuarios/autenticar`: autentica um usuário e devolve o token JWT
 * `POST /usuarios`: cadastro de usuários (somente usuários ADMIN)
 * `GET /h2-console`: console do database H2 (somente usuários ADMIN)
