@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /*
- * MANUTENÇÃO DE USUÁRIOS
+ * Injetada automaticamente no Spring Boot :)
  */
 
 @Service
