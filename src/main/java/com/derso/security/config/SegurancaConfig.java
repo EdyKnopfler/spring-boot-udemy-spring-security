@@ -43,8 +43,9 @@ public class SegurancaConfig {
 				autorizacao -> autorizacao
 					.requestMatchers("/").permitAll()  // Permite a home
 					.requestMatchers(
-							AntPathRequestMatcher.antMatcher("/h2-console/**"))
-						.hasAnyRole("ADMIN")
+						AntPathRequestMatcher.antMatcher("/h2-console/**"),
+						AntPathRequestMatcher.antMatcher("/usuarios/**")
+					).hasAnyRole("ADMIN")
 					.anyRequest().authenticated()      // Bloqueia o resto 
 			)
 			// O console do H2 requer habilitar os iframes e ignorar CSRF

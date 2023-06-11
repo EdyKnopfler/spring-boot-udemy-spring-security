@@ -1,13 +1,12 @@
 package com.derso.security.usuarios;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /*
@@ -18,28 +17,30 @@ import org.springframework.stereotype.Service;
 public class UsuarioServiceImpl 
 	implements UserDetailsService {  // Interface do Spring :)
 	
+	private static final PasswordEncoder encoder = 
+			new BCryptPasswordEncoder(12);
+	private static final String[] userRoles = {"USER"};
+	private static final String[] adminRoles = {"USER", "ADMIN"};
+	
 	@Autowired
 	private UsuarioRepository repositorio;
-
-	private final List<String> roles = Arrays.asList("USER", "ADMIN");
+	
+	public void salvar(Usuario usuario) {
+		String senhaPelada = usuario.getSenha();
+		usuario.setSenha(encoder.encode(senhaPelada));
+		repositorio.save(usuario);
+	}
 			
 	@Override
 	public UserDetails loadUserByUsername(String buscaLogin) throws UsernameNotFoundException {
 		Usuario usuario = repositorio
 			.findByLoginOrEmail(buscaLogin, buscaLogin)
 			.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + buscaLogin));
-		
-		String[] permissoes = roles
-			.stream()
-			.filter(role -> usuario.isAdmin() || !role.equals("ADMIN"))
-			.toArray(String[]::new);
-		
-		// Password igual ao username
-		// Encriptado em https://bcrypt-generator.com/
+
 		return User.builder()
 			.username(buscaLogin)
 			.password("{bcrypt}" + usuario.getSenha())
-			.roles(permissoes)
+			.roles(usuario.isAdmin() ? adminRoles : userRoles)
 			.build();
 	}
 
