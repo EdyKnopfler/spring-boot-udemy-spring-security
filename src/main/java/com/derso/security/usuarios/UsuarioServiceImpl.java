@@ -16,6 +16,10 @@ public class UsuarioServiceImpl
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		if (!username.equals("kânia")) {
+			throw new UsernameNotFoundException("Cê tá pensando que cê é quem??");
+		}
+		
 		// Password igual ao username
 		// Encriptado em https://bcrypt-generator.com/
 		return User.builder()
