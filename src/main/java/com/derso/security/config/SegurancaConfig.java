@@ -60,6 +60,7 @@ public class SegurancaConfig {
 			.csrf(csrf -> 
 				csrf.ignoringRequestMatchers(matchers))
 			.httpBasic(Customizer.withDefaults())
+			.formLogin(Customizer.withDefaults())
 			.build();
 	}
 	
