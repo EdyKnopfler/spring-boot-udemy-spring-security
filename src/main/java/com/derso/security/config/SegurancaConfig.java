@@ -1,5 +1,8 @@
 package com.derso.security.config;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -7,7 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -27,6 +30,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SegurancaConfig {
+	
+	@Autowired
+	private DataSource dataSource;
 	
 	// ESTE é o cara que configura o HttpSecurity agora :)
 	// Segundo as docs, o SecurityFilterChain se integra na cadeia de filtros de servlets
@@ -53,19 +59,14 @@ public class SegurancaConfig {
 	
 	@Bean
 	public UserDetailsService usuariosComBcrypt() {
-		// Passwords são iguais aos usernames
-		// Encriptados em https://bcrypt-generator.com/
-		UserDetails admin = User.builder()
-			.username("kânia")
-			.password("{bcrypt}$2a$12$.bLRI7BwK/osDYYSCPVtueLLhqq2d3aRMd4y.cefMjUrzceHRwEmW")
-			.roles("USER", "ADMIN")
-			.build();
-		UserDetails user = User.builder()
-			.username("ZÍMza")
-			.password("{bcrypt}$2a$12$qTllQZ7VLakpuNdmJXzs0.IJ23ZyXmX4g.wjap9.iFG6oeHtH/JCO")
-			.roles("USER")
-			.build();
-		return new InMemoryUserDetailsManager(user, admin);
+		/*
+		 *  Seguindo exemplo em:
+		 *  https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/jdbc.html
+		 *  
+		 *  Necessário antes acessar o database e executar os scripts de criação das tabelas.
+		 *  Criação dos usuários realizada na primeira execução (ver link da doc)
+		 */
+		return new JdbcUserDetailsManager(dataSource);
 	}
 
 }
